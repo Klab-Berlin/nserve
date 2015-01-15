@@ -1,0 +1,34 @@
+{
+  "name": "nserve",
+  "description": "a http and websocket server and request handler package for nodejs",
+  "version": "0.1.0",
+  "author": "Toni Wagner <i@itsatony.com>",
+  "engine": "node >= 0.10",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/itsatony/nserve.git"
+  },
+  "dependencies": {
+		"mime": "latest",
+		"body-parser": "latest",
+		"response-send": "latest",
+		"compression": "latest",
+		"response-redirect": "latest",
+		"router": "latest",
+		"qs": "latest",
+		"node-static": "latest",
+		"response-time": "latest",
+		"websocket": "latest",
+		"async": "latest",
+    "ua-parser": "latest",
+    "geoip-lite": "latest",
+    "json-stringify-safe": "latest",
+    "lg": "latest",
+    "minions": "latest",
+    "r2d2": "git://github.com/Klab-Berlin/r2d2.git#master"
+  },
+  "devDependencies": {
+    "mocha": "1.13.0",
+    "should": "2.0.1"
+  }
+}
