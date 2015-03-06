@@ -1,3 +1,5 @@
+var Lg = require('lg');
+var log = new Lg({log2console:true, logLevel:1});
 var nserve = require('../lib/nserve');
 var bodyParser = require('body-parser');
 var responseTime = require('response-time');
@@ -10,20 +12,40 @@ var middleWare = [
 	bodyParser.json(),
 	function(req, res, next) {
 		req.query = Qs.parse(req.url.split('?')[1]);
-		console.log('----------------------!!!!!************************');
+		console.log('----------------------!!!!!**************Qs.parse**********');
 		next();
 	}
 ];
 
-server = nserve.listen({host: 'itsatony.com'}); 
+nserve.events.on(
+	'listening',
+	function(srv) {
+		log.add('listening on http' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'httpTest', 2);
+		if (srv._config.websocket === true) {
+			log.add('listening on ws' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'httpTest', 2);
+		}
+	}
+);
+nserve.events.on(
+	'request',
+	function(srv, req, res) {
+		log.add('handling request to ' + req.url, 'yellow', 'httpTest', 2);
+	}
+);
+nserve.events.on(
+	'fileserver.result',
+	function(resultCode, srv, reqUrl) {
+		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'fileServer.' + resultCode, 2);
+	}
+);
+log.add('init', 'yellow', 'httpTest', 2);
 
-console.log('############# init');
-console.log(server);
-console.log('--------------------');
+server = nserve.listen({host: 'itsatony.com'}); 
 server.router.all(
 	'/api',
 	middleWare,
 	function(req, res, next) {
+		log.add('requestEnd', 'yellow', 'httpTest', 2);
 		req.handled = true;
 		console.log('############# /api [body]');
 		console.log(req.body);
