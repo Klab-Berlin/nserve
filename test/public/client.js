@@ -47,8 +47,18 @@ function init() {
       email: 'i@itsatony.com'
     }
 	};
-	jQuery('#content').text(JSON.stringify(demoReq));
+	jQuery('#content').text(JSON.stringify(demoReq, null, '  '));
 	drawMessage('system', { text: 'welcome to the test', timestamp: new Date().toLocaleTimeString() });
+	
+	codeTest.answer = ace.edit("content2");
+	codeTest.answer.setTheme("ace/theme/monokai");
+	codeTest.answer.getSession().setMode("ace/mode/javascript");
+	codeTest.answer.setReadOnly(true);
+	codeTest.editor = ace.edit("content");
+	codeTest.editor.setTheme("ace/theme/monokai");
+	codeTest.editor.getSession().setMode("ace/mode/javascript");
+	codeTest.editor.focus();
+	
 };
 
 
@@ -81,16 +91,7 @@ function send2server(url, data) {
 		return;
 	}
 	return codeTest.client.send(
-		{
-			command: command,
-			data: [
-				{
-					author: codeTest.nickName,
-					channel: codeTest.channel,
-					text: data.text
-				}
-			]
-		}
+		data
 	);
 };
 
@@ -98,12 +99,17 @@ function send2server(url, data) {
 function handleMessageFromServer(msg) {
 	console.log(msg);
 	drawMessage('server', msg);
+	codeTest.answer.setValue(JSON.stringify(msg, null, '  '));
 };
 
-
+function now() {
+	var d = new Date().toLocaleString(); 
+	return d;
+};
 
 function drawMessage(origin, data) {
-	var msgString = '<span>{ ---[' + origin + ']--- ' + '@' + Date.now() + '  ----- }</span></br><pre>' + JSON.stringify(data) + '</pre><br/>';
+	
+	var msgString = '<span>{ ---[' + origin + ']--- ' + '@' + now() + '  ----- }</span></br><pre>' + JSON.stringify(data) + '</pre>';
 	jQuery('#messages').append(msgString);
 };
 
