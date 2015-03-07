@@ -38,6 +38,12 @@ nserve.events.on(
 		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'fileServer.' + resultCode, 2);
 	}
 );
+nserve.events.on(
+	'log',
+	function(params) {
+		log.add.apply(log, params);
+	}
+);
 log.add('init', 'yellow', 'httpTest', 2);
 
 server = nserve.listen({host: 'itsatony.com'}); 

@@ -2,7 +2,9 @@
 codeTest = {
 	config: {
 		server: '127.0.0.1:8080',
-		clientId: '1391787352270T09x2PatW8ua-tst'
+		clientId: '1391787352270T09x2PatW8ua-tst',
+		ssl: false,
+		protocol: 'nprotocol'
 	},
 	nickName: 'person1',
 	channel: 'defaultChannel',
@@ -116,7 +118,16 @@ function drawMessage(origin, data) {
 
 function setupSocket() {
 	try {
-		var testSocket = new Socket(codeTest.config.server, { autoReconnect: true });
+		var testSocket = new Socket(
+			{
+				url: codeTest.config.server.split(':')[0],
+				port: codeTest.config.server.split(':')[1],
+				parameters: 'clientId=' + codeTest.config.clientId, //( + '&connectionId=' + this.socketConnectionId,
+				protocol: codeTest.config.protocol,
+				ssl: codeTest.config.ssl
+			},
+			{ autoReconnect: true }
+		);
 		testSocket.on('reconnect', function(msg, e) {
 			console.log('reconnected');
 		});
