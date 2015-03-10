@@ -1,7 +1,7 @@
 
-codeTest = {
+nserveWeb = {
 	config: {
-		server: '127.0.0.1:8080',
+		server: document.location.host,
 		clientId: '1391787352270T09x2PatW8ua-tst',
 		ssl: false,
 		protocol: 'nprotocol'
@@ -15,27 +15,28 @@ jQuery(document).ready(init);
 
 
 function init() {
+	jQuery('#serverUrl').val(nserveWeb.config.server);
 	jQuery('#send').on(
 		'click',
 		function() {
-			send(jQuery('#url').val(),jQuery('#content').val());
+			send(jQuery('#url').val(),nserveWeb.editor.getValue());
 		}
 	);
 	jQuery('#connect').on(
 		'click',
 		function(e) {
-			if (typeof codeTest.client !== null) {
-				delete codeTest.client;
+			if (typeof nserveWeb.client !== null) {
+				delete nserveWeb.client;
 			}
-			codeTest.config.server = jQuery('#serverUrl').val();
-			codeTest.client = setupSocket();
+			nserveWeb.config.server = jQuery('#serverUrl').val();
+			nserveWeb.client = setupSocket();
 		}
 	);
 	jQuery('#closeWS').on(
 		'click',
 		function(e) {
-			if (typeof codeTest.client !== null) {
-				delete codeTest.client;
+			if (typeof nserveWeb.client !== null) {
+				delete nserveWeb.client;
 			}
 			jQuery('#wsstatus').text(Date.now() + ' socket destroyed');
 		}
@@ -52,14 +53,14 @@ function init() {
 	jQuery('#content').text(JSON.stringify(demoReq, null, '  '));
 	drawMessage('system', { text: 'welcome to the test', timestamp: new Date().toLocaleTimeString() });
 	
-	codeTest.answer = ace.edit("content2");
-	codeTest.answer.setTheme("ace/theme/monokai");
-	codeTest.answer.getSession().setMode("ace/mode/javascript");
-	codeTest.answer.setReadOnly(true);
-	codeTest.editor = ace.edit("content");
-	codeTest.editor.setTheme("ace/theme/monokai");
-	codeTest.editor.getSession().setMode("ace/mode/javascript");
-	codeTest.editor.focus();
+	nserveWeb.answer = ace.edit("content2");
+	nserveWeb.answer.setTheme("ace/theme/monokai");
+	nserveWeb.answer.getSession().setMode("ace/mode/javascript");
+	nserveWeb.answer.setReadOnly(true);
+	nserveWeb.editor = ace.edit("content");
+	nserveWeb.editor.setTheme("ace/theme/monokai");
+	nserveWeb.editor.getSession().setMode("ace/mode/javascript");
+	nserveWeb.editor.focus();
 	
 };
 
@@ -71,8 +72,8 @@ function send(url, data) {
 
 
 function send2server(url, data) {
-	data.clientId = codeTest.config.clientId;
-	if (codeTest.client === null) {
+	data.clientId = nserveWeb.config.clientId;
+	if (nserveWeb.client === null) {
 		jQuery.ajax(
 			{
 				type:'POST',
@@ -92,7 +93,7 @@ function send2server(url, data) {
 		);
 		return;
 	}
-	return codeTest.client.send(
+	return nserveWeb.client.send(
 		data
 	);
 };
@@ -101,16 +102,17 @@ function send2server(url, data) {
 function handleMessageFromServer(msg) {
 	console.log(msg);
 	drawMessage('server', msg);
-	codeTest.answer.setValue(JSON.stringify(msg, null, '  '));
+	nserveWeb.answer.setValue(JSON.stringify(msg, null, '  '));
 };
+
 
 function now() {
 	var d = new Date().toLocaleString(); 
 	return d;
 };
 
-function drawMessage(origin, data) {
-	
+
+function drawMessage(origin, data) {	
 	var msgString = '<span>{ ---[' + origin + ']--- ' + '@' + now() + '  ----- }</span></br><pre>' + JSON.stringify(data) + '</pre>';
 	jQuery('#messages').append(msgString);
 };
@@ -120,11 +122,11 @@ function setupSocket() {
 	try {
 		var testSocket = new Socket(
 			{
-				url: codeTest.config.server.split(':')[0],
-				port: codeTest.config.server.split(':')[1],
-				parameters: 'clientId=' + codeTest.config.clientId, //( + '&connectionId=' + this.socketConnectionId,
-				protocol: codeTest.config.protocol,
-				ssl: codeTest.config.ssl
+				url: nserveWeb.config.server.split(':')[0],
+				port: nserveWeb.config.server.split(':')[1],
+				parameters: 'clientId=' + nserveWeb.config.clientId, //( + '&connectionId=' + this.socketConnectionId,
+				protocol: nserveWeb.config.protocol,
+				ssl: nserveWeb.config.ssl
 			},
 			{ autoReconnect: true }
 		);
@@ -148,7 +150,7 @@ function setupSocket() {
 				handleMessageFromServer(msg);
 			});
 		});
-		jQuery('#wsstatus').text(Date.now() + ' connecting to [' + codeTest.config.server + ']');
+		jQuery('#wsstatus').text(Date.now() + ' connecting to [' + nserveWeb.config.server + ']');
 	} catch(err) {
 		jQuery('#wsstatus').text(Date.now() + ' connection failed: ' + err);
 	}

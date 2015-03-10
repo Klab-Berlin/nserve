@@ -44,6 +44,12 @@ nserve.events.on(
 		log.add.apply(log, params);
 	}
 );
+nserve.events.on(
+	'njson',
+	function(params) {
+		var url = log.njson.apply(log, params);
+	}
+);
 log.add('init', 'yellow', 'httpTest', 2);
 
 server = nserve.listen({host: 'itsatony.com'}); 
