@@ -254,7 +254,7 @@ window.Socket = (function(){
 
   // initial
   function register ( id ) {
-
+console.log('REGISTERed AS ' + id);
     if ( !id ) return;  // open
 
     this.id = id;

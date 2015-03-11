@@ -27,6 +27,7 @@ function init() {
 		function(e) {
 			if (typeof nserveWeb.client !== null) {
 				delete nserveWeb.client;
+				nserveWeb.client = null;
 			}
 			nserveWeb.config.server = jQuery('#serverUrl').val();
 			nserveWeb.client = setupSocket();
@@ -79,7 +80,7 @@ function send2server(url, data) {
 				type:'POST',
 				dataType:'json',
 				url: url,
-				data:data,
+				data: data,
 				headers: {
 					'content-type': 'application/json;charset=UTF-8'
 				},
@@ -94,13 +95,12 @@ function send2server(url, data) {
 		return;
 	}
 	return nserveWeb.client.send(
-		data
+		url, JSON.parse(data)
 	);
 };
 
 
 function handleMessageFromServer(msg) {
-	console.log(msg);
 	drawMessage('server', msg);
 	nserveWeb.answer.setValue(JSON.stringify(msg, null, '  '));
 };
@@ -142,13 +142,13 @@ function setupSocket() {
 			jQuery('#wsstatus').text(Date.now() + ' connection error');
 		});
 		testSocket.on('open', function(e) {
-			jQuery('#wsstatus').text(Date.now() + ' connection open');
 			console.log('[open]');
-			testSocket.on('message', function(msg, e) {
-				console.log('[message]');
-				console.log(msg);
-				handleMessageFromServer(msg);
-			});
+			jQuery('#wsstatus').text(Date.now() + ' connection open');
+			testSocket.id = '1337socket';
+		});		
+		testSocket.on('message', function(msg, e) {
+			console.log('[message]');
+			handleMessageFromServer(msg);
 		});
 		jQuery('#wsstatus').text(Date.now() + ' connecting to [' + nserveWeb.config.server + ']');
 	} catch(err) {

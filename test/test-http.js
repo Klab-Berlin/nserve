@@ -4,6 +4,7 @@ var nserve = require('../lib/nserve');
 var bodyParser = require('body-parser');
 var responseTime = require('response-time');
 var compression  = require('compression');
+var Router = require('router'); // https://github.com/pillarjs/router
 var Qs  = require('qs');
 var middleWare = [
 	compression(), 
@@ -35,7 +36,7 @@ nserve.events.on(
 nserve.events.on(
 	'fileserver.result',
 	function(resultCode, srv, reqUrl) {
-		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'fileServer.' + resultCode, 2);
+		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'httpTest.fileServer.' + resultCode, 2);
 	}
 );
 nserve.events.on(
@@ -53,6 +54,34 @@ nserve.events.on(
 log.add('init', 'yellow', 'httpTest', 2);
 
 server = nserve.listen({host: 'itsatony.com'}); 
+server.router = Router();
+
+
+
+server.on(
+	'unifyRequestDone',
+	function(req, res, uniReq) {
+		console.log('--->' , uniReq);
+		if (uniReq.requestType === 'http') {
+			return server.router(
+				req, 
+				res, 
+				function(err) {
+					if (err) {
+						console.error(err.stack || err.toString());
+					} else if (!req.handled) {
+						server._fileServer(req, res);
+					}
+					return;
+				}
+			);
+		} else {
+			answer(req, res, function() {});
+		}
+	}
+);
+
+
 server.router.all(
 	'/api',
 	middleWare,
@@ -65,9 +94,15 @@ server.router.all(
 		console.log('############# /api [query]');
 		console.log(req.query);
 		console.log('--------------------');
-		res.json(200, {done: 'true'});
 		next();
-	}
+	},
+	answer
 );
 
+
+function answer(req, res, next) {
+	console.log('ANSWERING ~~~~~');
+	res.json(200, {done: 'true'});
+	next();
+};
 
