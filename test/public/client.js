@@ -2,7 +2,7 @@
 nserveWeb = {
 	config: {
 		server: document.location.host,
-		clientId: '1391787352270T09x2PatW8ua-tst',
+		clientId: 'cid1426859972031fjv1omdt58ccxfdt',
 		ssl: false,
 		protocol: 'nprotocol'
 	},
@@ -132,6 +132,7 @@ function setupSocket() {
 		);
 		testSocket.on('reconnect', function(msg, e) {
 			console.log('reconnected');
+			jQuery('#wsstatus').text(Date.now() + ' connection (re)open');
 		});
 		testSocket.on('close', function(e) {
 			console.log('[close]');

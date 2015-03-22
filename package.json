@@ -24,6 +24,7 @@
     "geoip-lite": "latest",
     "json-stringify-safe": "latest",
     "lg": "latest",
+    "q": "latest",
     "minions": "latest",
     "r2d2": "git://github.com/Klab-Berlin/r2d2.git#master"
   },

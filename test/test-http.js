@@ -1,19 +1,13 @@
 var Lg = require('lg');
 var log = new Lg({log2console:true, logLevel:1});
 var nserve = require('../lib/nserve');
-var bodyParser = require('body-parser');
 var responseTime = require('response-time');
 var compression  = require('compression');
 var Router = require('router'); // https://github.com/pillarjs/router
-var Qs  = require('qs');
 var middleWare = [
 	compression(), 
 	responseTime(),
-	bodyParser.urlencoded({ extended: false }),
-	bodyParser.json(),
 	function(req, res, next) {
-		req.query = Qs.parse(req.url.split('?')[1]);
-		console.log('----------------------!!!!!**************Qs.parse**********');
 		next();
 	}
 ];
@@ -47,8 +41,9 @@ nserve.events.on(
 );
 nserve.events.on(
 	'njson',
-	function(params) {
-		var url = log.njson.apply(log, params);
+	function(obj, id) {
+		var url = log.njson(obj, id);
+		return url;
 	}
 );
 log.add('init', 'yellow', 'httpTest', 2);
@@ -61,7 +56,8 @@ server.router = Router();
 server.on(
 	'unifyRequestDone',
 	function(req, res, uniReq) {
-		console.log('--->' , uniReq);
+		// console.log('--- [uniReq] ---' , uniReq);
+		res.uniReq = uniReq;
 		if (uniReq.requestType === 'http') {
 			return server.router(
 				req, 
@@ -101,8 +97,9 @@ server.router.all(
 
 
 function answer(req, res, next) {
-	console.log('ANSWERING ~~~~~');
-	res.json(200, {done: 'true'});
+	// console.log('ANSWERING ~~~~~');
+	res.uniReq.done = true;
+	res.json(200, res.uniReq);
 	next();
 };
 
