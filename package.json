@@ -8,13 +8,12 @@
     "type": "git",
     "url": "git://github.com/itsatony/nserve.git"
   },
+	"main": "lib/nserve",
   "dependencies": {
 		"mime": "latest",
 		"body-parser": "latest",
 		"response-send": "latest",
-		"compression": "latest",
 		"response-redirect": "latest",
-		"router": "latest",
 		"qs": "latest",
 		"node-static": "latest",
 		"response-time": "latest",
