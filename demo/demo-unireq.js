@@ -17,22 +17,24 @@ var middleWare = [
 nserve.events.on(
 	'listening',
 	function(srv) {
-		log.add('listening on http' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'httpTest', 2);
+		log.add('listening on http' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'uniReqDemo', 2);
 		if (srv._config.websocket === true) {
-			log.add('listening on ws' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'httpTest', 2);
+			log.add('listening on ws' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'uniReqDemo', 2);
 		}
 	}
 );
+// this event is triggered for any incoming request before unifying the data. you can handle here, but i wouldn't...
 nserve.events.on(
 	'request',
 	function(srv, req, res) {
-		log.add('handling request to ' + req.url, 'yellow', 'httpTest', 2);
+		log.add('incoming request to ' + req.url, 'yellow', 'uniReqDemo', 2);
 	}
 );
+// the event triggered by the fileserver module upon it answering a request.
 nserve.events.on(
 	'fileserver.result',
 	function(resultCode, srv, reqUrl) {
-		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'httpTest.fileServer.' + resultCode, 2);
+		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'uniReqDemo.fileServer.' + resultCode, 2);
 	}
 );
 // nserve itself will not log stuff, but trigger a log event, so you can use whatever logging system you prefer
@@ -50,7 +52,6 @@ nserve.events.on(
 		return url;
 	}
 );
-log.add('init', 'yellow', 'httpTest', 2);
 
 
 // START THE SERVER
@@ -84,14 +85,14 @@ server.on(
 );
 
 
-// just a demo route
+// just a demo route - this is a link to the default router module we use: https://github.com/pillarjs/router
 server.router.all(
 	'/api',
 	middleWare,
 	function(req, res, next) {
 		// if we handled the request via the router, we flag it, so the fileServer does not take over
 		req.handled = true;
-		log.add('route /api ', 'yellow', 'httpTest', 2);
+		log.add('route /api ', 'yellow', 'uniReqDemo', 2);
 		next();
 	},
 	answerUniReq
@@ -104,4 +105,8 @@ function answerUniReq(req, res, next) {
 	res.json(200, res.uniReq);
 	next();
 };
+
+
+// hello world
+log.add('init', 'yellow', 'uniReqDemo', 2);
 
