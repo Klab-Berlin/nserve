@@ -1,8 +1,10 @@
 // our server module
 var nserve = require('../lib/nserve');
+
 // some pretty logging
 var Lg = require('lg');
 var log = new Lg({log2console:true, logLevel:1});
+
 // defining the general http-request middleWare we want to use.
 var responseTime = require('response-time');
 var compression  = require('compression');
@@ -13,7 +15,9 @@ var middleWare = [
 		next();
 	}
 ];
+
 // bind nserve events
+// printing basic info upon listening
 nserve.events.on(
 	'listening',
 	function(srv) {
