@@ -1,9 +1,11 @@
+// our server module
+var nserve = require('../lib/nserve');
+// some pretty logging
 var Lg = require('lg');
 var log = new Lg({log2console:true, logLevel:1});
-var nserve = require('../lib/nserve');
+// defining the general http-request middleWare we want to use.
 var responseTime = require('response-time');
 var compression  = require('compression');
-var Router = require('router'); // https://github.com/pillarjs/router
 var middleWare = [
 	compression(), 
 	responseTime(),
@@ -11,7 +13,7 @@ var middleWare = [
 		next();
 	}
 ];
-
+// bind nserve events
 nserve.events.on(
 	'listening',
 	function(srv) {
@@ -33,12 +35,14 @@ nserve.events.on(
 		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'httpTest.fileServer.' + resultCode, 2);
 	}
 );
+// nserve itself will not log stuff, but trigger a log event, so you can use whatever logging system you prefer
 nserve.events.on(
 	'log',
 	function(params) {
 		log.add.apply(log, params);
 	}
 );
+// nserve offers a special event to log json data. this is it... 
 nserve.events.on(
 	'njson',
 	function(obj, id) {
@@ -48,56 +52,54 @@ nserve.events.on(
 );
 log.add('init', 'yellow', 'httpTest', 2);
 
-server = nserve.listen({host: 'itsatony.com'}); 
-server.router = Router();
 
-
-
+// START THE SERVER
+var server = nserve.listen({host: 'itsatony.com', port 8180, websocket: true}); 
+// HANDLE A INCOMING (unified) REQUEST
 server.on(
 	'unifyRequestDone',
 	function(req, res, uniReq) {
-		// console.log('--- [uniReq] ---' , uniReq);
+		// allows easier answering and handling
 		res.uniReq = uniReq;
-		if (uniReq.requestType === 'http') {
-			return server.router(
-				req, 
-				res, 
-				function(err) {
-					if (err) {
-						console.error(err.stack || err.toString());
-					} else if (!req.handled) {
-						server._fileServer(req, res);
-					}
-					return;
-				}
-			);
-		} else {
-			answer(req, res, function() {});
+		// if this was a websocket message, we answer it (the answerUnireq will simply send the uniReq object.. it's a demo afterall)
+		if (uniReq.requestType === 'websocket') {
+			return answerUniReq(req, res, function() {});
 		}
+		// if this was a standard http request, we route it
+		return server.router(
+			req, 
+			res, 
+			function(err) {
+				if (err) {
+					console.error(err.stack || err.toString());
+				} else if (!req.handled) {
+					// a request reached nserver, no routes reported handling the request.
+					// hence, try serving a file
+					server._fileServer(req, res);
+				}
+				return;
+			}
+		);
 	}
 );
 
 
+// just a demo route
 server.router.all(
 	'/api',
 	middleWare,
 	function(req, res, next) {
-		log.add('requestEnd', 'yellow', 'httpTest', 2);
+		// if we handled the request via the router, we flag it, so the fileServer does not take over
 		req.handled = true;
-		console.log('############# /api [body]');
-		console.log(req.body);
-		console.log('--------------------');
-		console.log('############# /api [query]');
-		console.log(req.query);
-		console.log('--------------------');
+		log.add('route /api ', 'yellow', 'httpTest', 2);
 		next();
 	},
-	answer
+	answerUniReq
 );
 
 
-function answer(req, res, next) {
-	// console.log('ANSWERING ~~~~~');
+// answer any incoming request by sending back the uniReq object
+function answerUniReq(req, res, next) {
 	res.uniReq.done = true;
 	res.json(200, res.uniReq);
 	next();
