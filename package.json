@@ -24,6 +24,7 @@
     "json-stringify-safe": "latest",
     "lg": "latest",
     "q": "latest",
+    "nids": "latest",
     "minions": "latest",
     "r2d2": "git://github.com/Klab-Berlin/r2d2.git#master"
   },
