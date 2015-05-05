@@ -20,6 +20,7 @@
 		"websocket": "latest",
 		"async": "latest",
     "ua-parser": "latest",
+    "router": "latest",
     "geoip-lite": "latest",
     "json-stringify-safe": "latest",
     "lg": "latest",
