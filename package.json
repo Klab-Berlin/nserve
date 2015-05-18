@@ -1,7 +1,7 @@
 {
   "name": "nserve",
   "description": "a http and websocket server and request handler package for nodejs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Toni Wagner <i@itsatony.com>",
   "engine": "node >= 0.10",
   "repository": {
@@ -20,7 +20,7 @@
 		"websocket": "latest",
 		"async": "latest",
     "ua-parser": "latest",
-    "geoip-lite": "latest",
+    "router": "latest",
     "json-stringify-safe": "latest",
     "lg": "latest",
     "q": "latest",
