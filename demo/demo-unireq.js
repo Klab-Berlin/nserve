@@ -1,9 +1,6 @@
 // our server module
 var nserve = require('../lib/nserve');
 
-// some pretty logging
-var Lg = require('lg');
-var log = new Lg({log2console:true, logLevel:1});
 
 // defining the general http-request middleWare we want to use.
 var responseTime = require('response-time');
@@ -21,9 +18,9 @@ var middleWare = [
 nserve.events.on(
 	'listening',
 	function(srv) {
-		log.add('listening on http' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'uniReqDemo', 2);
+		console.log('listening on http' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port);
 		if (srv._config.websocket === true) {
-			log.add('listening on ws' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port, 'green', 'uniReqDemo', 2);
+			console.log('listening on ws' + ((srv._config.ssl)?'s':'') + '://' + srv._config.host + '.' + srv._config.port);
 		}
 	}
 );
@@ -31,28 +28,28 @@ nserve.events.on(
 nserve.events.on(
 	'request',
 	function(srv, req, res) {
-		log.add('incoming request to ' + req.url, 'yellow', 'uniReqDemo', 2);
+		console.log('incoming request to ' + req.url);
 	}
 );
 // the event triggered by the fileserver module upon it answering a request.
 nserve.events.on(
 	'fileserver.result',
 	function(resultCode, srv, reqUrl) {
-		log.add(reqUrl, (resultCode === 200) ? 'green' : 'red',  'uniReqDemo.fileServer.' + resultCode, 2);
+		console.log(reqUrl, resultCode);
 	}
 );
 // nserve itself will not log stuff, but trigger a log event, so you can use whatever logging system you prefer
 nserve.events.on(
 	'log',
 	function(params) {
-		log.add.apply(log, params);
+		console.log.apply(console.log, params);
 	}
 );
 // nserve offers a special event to log json data. this is it... 
 nserve.events.on(
 	'njson',
 	function(obj, id) {
-		var url = log.njson(obj, id);
+		var url = console.log(obj, id);
 		return url;
 	}
 );
@@ -96,7 +93,7 @@ server.router.all(
 	function(req, res, next) {
 		// if we handled the request via the router, we flag it, so the fileServer does not take over
 		req.handled = true;
-		log.add('route /api ', 'yellow', 'uniReqDemo', 2);
+		console.log('route /api ');
 		next();
 	},
 	answerUniReq
@@ -112,5 +109,5 @@ function answerUniReq(req, res, next) {
 
 
 // hello world
-log.add('init', 'yellow', 'uniReqDemo', 2);
+console.log('init');
 
