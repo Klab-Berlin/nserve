@@ -14,7 +14,7 @@
 		"body-parser": "latest",
 		"response-send": "latest",
 		"response-redirect": "latest",
-		"qs": "latest",
+		"qs": "5.2",
 		"node-static": "latest",
 		"response-time": "latest",
 		"websocket": "latest",
