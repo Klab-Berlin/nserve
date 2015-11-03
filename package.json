@@ -1,7 +1,7 @@
 {
   "name": "nserve",
   "description": "a http and websocket server and request handler package for nodejs",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "author": "Toni Wagner <i@itsatony.com>",
   "engine": "node >= 0.10",
   "repository": {
@@ -14,7 +14,7 @@
 		"body-parser": "latest",
 		"response-send": "latest",
 		"response-redirect": "latest",
-		"qs": "5.2",
+		"qs": "5.2.x",
 		"node-static": "latest",
 		"response-time": "latest",
 		"websocket": "latest",
